@@ -1,4 +1,7 @@
+require 'json'
 require 'rest-client'
+require File.join('joust','expected_response.rb')
+require File.join('joust','expected_response','version_20.rb')
 
 class Joust
 
@@ -18,15 +21,17 @@ class Joust
   def check
     num_tests = passed_tests = 0
     results = @test_cases.map(&:flatten).inject([]) do |results, test|
-      resp = RestClient.post(@url, test.last.first, :content_type => 'application/json')
+      test_name, sent, expected = test.first, test.last.first, test.last.last
+      resp = RestClient.post(@url, sent, :content_type => 'application/json')
       num_tests += 1
-      if resp.body =~ test.last.last
+      json_hash = JSON.parse(resp.body) rescue {}
+      if expected.match?(json_hash)
         passed_tests += 1
         result_output = 'PASS'
       else
         result_output = 'FAIL: ' + resp.body
       end
-      results << "#{@version} #{test.first} -- #{result_output}"
+      results << "#{@version} #{test_name} -- #{result_output}"
       results
     end
     results << "JSON-RPC #{@version}: #{passed_tests}/#{num_tests} tests passed"

@@ -3,56 +3,39 @@
 v2.0: # http://www.jsonrpc.org/spec.html
   - "Positional parameters (1/2)":
     - '{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": 1}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"result":\s?19,\s?"id":\s?1\}/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {result: 19, id: 1}
   - "Positional parameters (2/2)":
     - '{"jsonrpc": "2.0", "method": "subtract", "params": [23, 42], "id": 2}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"result":\s?-19,\s?"id":\s?2\}/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {result: -19, id: 2}
   - "Named parameters (1/2)":
-    - '{"jsonrpc": "2.0", "method": "subtract_named", "params": {"subtrahend": 23, "minuend": 42}, "id": 2}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"result":\s?19,\s?"id":\s?2\}/
+    - '{"jsonrpc": "2.0", "method": "subtract_named", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}'
+    - !ruby/object:YAML::Joust::Version20
+      expected: {result: 19, id: 3}
   - "Named parameters (2/2)":
-    - '{"jsonrpc": "2.0", "method": "subtract_named", "params": {"minuend": 42, "subtrahend": 23}, "id": 3}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"result":\s?19,\s?"id":\s?3\}/
+    - '{"jsonrpc": "2.0", "method": "subtract_named", "params": {"minuend": 42, "subtrahend": 23}, "id": 4}'
+    - !ruby/object:YAML::Joust::Version20
+      expected: {result: 19, id: 4}
   - "Notification (1/2)":
     - '{"jsonrpc": "2.0", "method": "update", "params": [1,2,3,4,5]}'
-    - !ruby/regexp /^$/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {}
   - "Notification (2/2)":
     - '{"jsonrpc": "2.0", "method": "foobar"}'
-    - !ruby/regexp /^$/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {}
   - "Missing method":
-    - '{"jsonrpc": "2.0", "method": "notthere", "id": "1"}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32601,\s?"message":\s?"Method not found."\},\s?"id":\s?"1"\}/
+    - '{"jsonrpc": "2.0", "method": "notthere", "id": 5}'
+    - !ruby/object:YAML::Joust::Version20
+      expected: {error: {code: -32601, message: "Method not found."}, id: 5}
   - "Invalid JSON":
     - '{"jsonrpc": "2.0", "method": "foobar, "params": "bar", "baz]'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32700,\s?"message":\s?"Parse error."},\s?"id":\s?null\}/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {error: {code: -32700, message: "Parse error."}, id: ~}
   - "Invalid JSON-RPC":
     - '{"jsonrpc": "2.0", "method": 1, "params": "bar"}'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\}/
-  - "Invalid batch JSON":
-    - '[ {"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},{"jsonrpc": "2.0", "method" ]'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32700,\s?"message":\s?"Parse error."},\s?"id":\s?null\}/
-  - "Empty array":
-    - '[]'
-    - !ruby/regexp /\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\}/
-  - "Invalid batch JSON-RPC (1/2)":
-    - '[1]'
-    - !ruby/regexp /\[\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\}\]/
-  - "Invalid batch JSON-RPC (2/2)":
-    - '[1,2,3]'
-    - !ruby/regexp /\[\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\},\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\},\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\}\]/
-  - "Batch call":
-    - >- [{"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},
-      {"jsonrpc": "2.0", "method": "notify_hello", "params": [7]},
-      {"jsonrpc": "2.0", "method": "subtract", "params": [42,23], "id": "2"},
-      {"foo": "boo"},
-      {"jsonrpc": "2.0", "method": "notthere", "params": {"name": "myself"}, "id": "5"},
-      {"jsonrpc": "2.0", "method": "get_data", "id": "9"}]
-    - !ruby/regexp /\[\{"jsonrpc":\s?"2.0",\s?"result":\s?7,\s?"id":\s?"1"\},\{"jsonrpc":\s?"2.0",\s?"result":\s?19,\s?"id":\s?"2"\},\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32600,\s?"message":\s?"Invalid Request."\},\s?"id":\s?null\},\{"jsonrpc":\s?"2.0",\s?"error":\s?\{"code":\s?-32601,\s?"message":\s?"Method not found."\},\s?"id":\s?"5"\},\{"jsonrpc":\s?"2.0",\s?"result":\s?\["hello",\s?5\],\s?"id":\s?"9"\}\]/
+    - !ruby/object:YAML::Joust::Version20
+      expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
 
-v1.2: # http://jsonrpc.org/historical/jsonrpc12_proposal.html#specification
-  - "Procedure Call with positional parameters (1/2)":
-    - '{"method": "subtract", "params": [42, 23], "id": 1}'
-    - !ruby/regexp '/\{"result":\s?19,\s?"error":\s?null,\s?"id":\s?1\}/'
-  - "Procedure Call with positional parameters (2/2)":
-    - '{"method": "subtract", "params": [23, 42], "id": 2}'
-    - !ruby/regexp '/\{"result":\s?-19,\s?"error":\s?null,\s?"id":\s?2\}/'
+#TODO 1.2 test cases, batch tests for 2.0
