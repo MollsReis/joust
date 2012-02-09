@@ -25,7 +25,12 @@ class Joust
       resp = RestClient.post(@url, sent, :content_type => 'application/json')
       num_tests += 1
       json_hash = JSON.parse(resp.body) rescue {}
-      if expected.match?(json_hash)
+      if expected.is_a?(Array)
+        pass = expected.inject(true) { |pass, exp| pass = false unless exp.match?(json_hash.shift); pass }
+      else
+        pass = expected.match?(json_hash)
+      end
+      if !!pass
         passed_tests += 1
         result_output = 'PASS'
       else

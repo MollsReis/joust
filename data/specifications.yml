@@ -37,5 +37,50 @@ v2.0: # http://www.jsonrpc.org/spec.html
     - '{"jsonrpc": "2.0", "method": 1, "params": "bar"}'
     - !ruby/object:YAML::Joust::Version20
       expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+  - "Invalid batch JSON":
+    - '[ {"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},{"jsonrpc": "2.0", "method" ]'
+    - !ruby/object:YAML::Joust::Version20
+      expected: {error: {code: -32700, message: "Parse error."}, id: ~}
+  - "Empty array":
+    - '[]'
+    - !ruby/object:YAML::Joust::Version20
+      expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+  - "Invalid batch JSON-RPC (1/2)":
+    - '[1]'
+    -
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+  - "Invalid batch JSON-RPC (2/2)":
+    - '[1,2,3]'
+    -
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+  - "Batch call":
+    - >- [{"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": 1},
+      {"jsonrpc": "2.0", "method": "notify_hello", "params": [7]},
+      {"jsonrpc": "2.0", "method": "subtract", "params": [42,23], "id": 2},
+      {"foo": "boo"},
+      {"jsonrpc": "2.0", "method": "notthere", "params": {"name": "myself"}, "id": 5},
+      {"jsonrpc": "2.0", "method": "get_data", "id": 9}]
+    -
+      - !ruby/object:YAML::Joust::Version20
+        expected: {result: 7, id: 1}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {result: 19, id: 2}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32600, message: "Invalid Request."}, id: ~}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {error: {code: -32601, message: "Method not found."}, id: 5}
+      - !ruby/object:YAML::Joust::Version20
+        expected: {result: ["hello", 5], id: 9}
+  - "Batch call (all notifications)":
+    - >- [{"jsonrpc": "2.0", "method": "notify_sum", "params": [1,2,4]},
+      {"jsonrpc": "2.0", "method": "notify_hello", "params": [7]}]
+    - !ruby/object:YAML::Joust::Version20
+      expected: {}
 
-#TODO 1.2 test cases, batch tests for 2.0
+#TODO 1.2 test cases
