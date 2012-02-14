@@ -116,7 +116,7 @@ v1.2: # http://jsonrpc.org/historical/jsonrpc12_proposal.html#specification
     - '{"method": "foobar, "params": "bar", "baz]'
     - !ruby/object:YAML::Joust::Version12
       expected: {result:~, error: {code: -32700, message: "Parse error."}, id: ~}
-  - "Invalid JSON-RPC (1/2":
+  - "Invalid JSON-RPC (1/2)":
     - '[1,2,3]'
     - !ruby/object:YAML::Joust::Version12
       expected: {result:~, error: {code: -32600, message: "Invalid JSON-RPC."}, id: ~}
