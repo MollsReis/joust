@@ -83,4 +83,44 @@ v2.0: # http://www.jsonrpc.org/spec.html
     - !ruby/object:YAML::Joust::Version20
       expected: {}
 
-#TODO 1.2 test cases
+v1.2: # http://jsonrpc.org/historical/jsonrpc12_proposal.html#specification
+  - "Positional parameters (1/2)":
+    - '{"method": "subtract", "params": [42, 23], "id": 1}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result: 19, error:~, id: 1}
+  - "Positional parameters (2/2)":
+    - '{"method": "subtract", "params": [23, 42], "id": 2}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result: -19, error:~, id: 2}
+  - "Named parameters (1/2)":
+    - '{"method": "subtract_named", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result: 19, error:~, id: 3}
+  - "Named parameters (2/2)":
+    - '{"method": "subtract_named", "params": {"minuend": 42, "subtrahend": 23}, "id": 4}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result: 19, error:~, id: 4}
+  - "Notification (1/2)":
+    - '{"method": "update", "params": [1,2,3,4,5], "id": null}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {}
+  - "Notification (2/2)":
+    - '{"method": "foobar", error:~, "id": null}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {}
+  - "Missing method":
+    - '{ "method": "notthere", "id": 5}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result:~, error: {code: -32601, message: "Procedure not found."}, id: 5}
+  - "Invalid JSON":
+    - '{"method": "foobar, "params": "bar", "baz]'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result:~, error: {code: -32700, message: "Parse error."}, id: ~}
+  - "Invalid JSON-RPC (1/2":
+    - '[1,2,3]'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result:~, error: {code: -32600, message: "Invalid JSON-RPC."}, id: ~}
+  - "Invalid JSON-RPC (2/2)":
+    - '{"method": 1, "params": "bar"}'
+    - !ruby/object:YAML::Joust::Version12
+      expected: {result:~, error: {code: -32600, message: "Invalid JSON-RPC."}, id: ~}
