@@ -16,7 +16,7 @@ rescue
 end
 
 # default options
-options = {:version => ['v1.2', 'v2.0']}
+options = {:version => 'v2.0'}
 
 # command line options
 require 'optparse'
@@ -24,7 +24,7 @@ OptionParser.new do |opts|
   opts.banner = 'Usage: joust <url> [options]'
 
   opts.on('-o', '--only-check VERSION', 'Check only against JSON-RPC Specifications for VERSION (ex: v2.0)') do |v|
-    options[:version] = [v]
+    options[:version] = v
   end
 
   opts.on_tail("-h", "--help", "Show this message") do

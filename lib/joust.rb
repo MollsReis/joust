@@ -1,15 +1,15 @@
 require 'json'
 require 'rest-client'
 require File.join('joust','expected_response.rb')
+require File.join('joust','expected_response','version_12.rb')
 require File.join('joust','expected_response','version_20.rb')
 
 class Joust
 
   # run each version spec and return results
   def self.run(url, options, test_cases)
-    specs = options[:version].inject([]) { |specs, ver| specs << self.new(url, test_cases[ver], ver); specs }
-    results = specs.inject([]) { |res, spec| res << spec.check; res }
-    puts results
+    specs = self.new(url, test_cases[options[:version]], options[:version])
+    puts specs.check
   end
 
   # initialize an instance to test a specific version
