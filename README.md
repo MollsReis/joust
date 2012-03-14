@@ -1,0 +1,50 @@
+# Joust - A JSON-RPC Server testing utility
+
+## What is JSON-RPC?
+From the [JSON-RPC Spec](http://www.jsonrpc.org/spec.html):
+
+"JSON-RPC is a stateless, light-weight remote procedure call (RPC) protocol. Primarily this specification defines several data structures and the rules around their processing.
+It is transport agnostic in that the concepts can be used within the same process, over sockets, over http, or in many various message passing environments. It uses JSON (RFC 4627)
+as data format. It is designed to be simple!"
+
+## What is Joust good for?
+There are many JSON-RPC frameworks available for a variety of languages, but it can be difficult to tell which ones truly conform to specifications. Joust is a utility that allows a user or
+developer to determine if a particular framework meets these specifications (and if it does not it enumerates how the framework failed).
+
+## What versions of JSON-RPC specifications can I test for?
+Joust supports testing for JSON-RPC [v1.2](http://jsonrpc.org/historical/jsonrpc12_proposal.html#specification) and [v2.0](http://www.jsonrpc.org/spec.html) (v2.0 is used by default).
+
+## How do I use Joust?
+JSON-RPC tests a server framework by sending predetermined requests and examining the server's response versus the expected response. To use Joust, set up a JSON-RPC Server that supports the
+following methods (and ONLY the following methods):
+- subtract: takes two parameters and returns difference between the first minus the second
+- subtract_named: takes two named parameters ('minuend' and 'subtrahend') in any order and subtracts minuend minus subtrahend.
+- update: takes five parameters and does nothing
+- foobar: takes no parameters and does nothing
+- sum: takes three parameters and returns their sum
+- notify_hello: takes one parameter and does nothing
+- get_data: takes no paramters and returns an array of 'hello' and 5
+- notify_sum: takes three parameters and does nothing
+Examples of a PHP class and a Ruby class with the above methods defined can be found in the example directory. Note that all of these methods are used to test a JSON-RPC v2.0 server, but only a
+subset of them are used to test v1.2.
+
+After setting this up just point Joust at the server and check out the results:
+    joust <JSON-RPC server url>
+
+The results should look something like this:
+    v2.0 Positional parameters (1/2) -- PASS
+    v2.0 Positional parameters (2/2) -- PASS
+    v2.0 Named parameters (1/2) -- PASS
+    v2.0 Named parameters (2/2) -- PASS
+    v2.0 Notification (1/2) -- PASS
+    v2.0 Notification (2/2) -- PASS
+    v2.0 Missing method -- PASS
+    v2.0 Invalid JSON -- PASS
+    v2.0 Invalid JSON-RPC -- PASS
+    v2.0 Invalid batch JSON -- PASS
+    v2.0 Empty array -- PASS
+    v2.0 Invalid batch JSON-RPC (1/2) -- PASS
+    v2.0 Invalid batch JSON-RPC (2/2) -- PASS
+    v2.0 Batch call -- PASS
+    v2.0 Batch call (all notifications) -- PASS
+    JSON-RPC v2.0: 15/15 tests passed
