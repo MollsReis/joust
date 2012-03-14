@@ -24,7 +24,17 @@ describe Joust do
 
   describe '#check' do
     it 'runs the test cases' do
-      pending
+      fake_resp = double('resp')
+      fake_resp.stub!(:body)
+      content_type = {:content_type => 'application/json'}
+      RestClient.should_receive(:post).with('url', 'sent', content_type).and_return(fake_resp)
+      fake_expected = double('expected')
+      fake_expected.should_receive(:is_a?).with(Array).and_return(false)
+      fake_expected.should_receive(:match?).with({}).and_return(true)
+      fake_test_cases = [{'test' => ['sent', fake_expected]}]
+      joust = Joust.new('url', fake_test_cases, 'v3.14')
+      results = joust.check
+      results.last.should == "JSON-RPC v3.14: 1/1 tests passed"
     end
   end
 
