@@ -23,7 +23,7 @@ require 'optparse'
 OptionParser.new do |opts|
   opts.banner = 'Usage: joust <url> [options]'
 
-  opts.on('-o', '--only-check VERSION', 'Check only against JSON-RPC Specifications for VERSION (ex: v2.0)') do |v|
+  opts.on('-o', '--only-check (v1.2|v2.0)', 'Check only against JSON-RPC Specifications for specified version') do |v|
     options[:version] = v
   end
 
